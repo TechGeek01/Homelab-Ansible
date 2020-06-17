@@ -1,0 +1,51 @@
+- name: Set up new machines
+  hosts: new
+  become: true
+
+  tasks:
+  - name: Update package lists
+    apt:
+      update_cache: yes
+
+  - name: Update packages
+    apt:
+      name: "*"
+      state: latest
+
+  - name: Install extra packages
+    apt:
+      pkg:
+      - openssh-server
+      - open-vm-tools
+      - software-properties-common
+      - apcupsd
+
+  - name: Back up default apcupsd config
+    shell: creates=/etc/apcupsd/apcupsd.conf.bak mv /etc/apcupsd/apcupsd.conf /etc/apcupsd/apcupsd.conf.bak
+
+  - name: Copy custom apcupsd config
+    template:
+      src: /etc/ansible/files/apcupsd.conf
+      dest: /etc/apcupsd/apcupsd.conf
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+    - restart-apcupsd
+
+  - name: Back up user bashrc
+    shell: creates=/home/andy/.bashrc.bak mv /home/andy/.bashrc /home/andy/.bashrc.bak
+
+  - name: Adding color to user bashrc
+    copy:
+      src: /etc/ansible/files/debian.bashrc
+      dest: /home/andy/.bashrc
+      owner: andy
+      group: andy
+      mode: 0644
+
+  handlers:
+  - name: restart-apcupsd
+    service:
+      name: apcupsd
+      state: restarted
