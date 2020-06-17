@@ -1,0 +1,24 @@
+# If you have multiple hosts following a pattern you can specify
+# them like this:
+
+## www[001:006].example.com
+
+## db-[99:101]-node.example.com
+
+[new]
+argon
+
+[new:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+[debian]
+oxygen
+fluorine
+copper
+carbon
+argon
+10.0.80.254
+10.0.101.50 ansible_user=pi
+
+[debian:vars]
+ansible_python_interpreter=/usr/bin/python3
